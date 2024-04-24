@@ -16,16 +16,20 @@ func main() {
 	svc := service.NewService(mysqlRepo)
 
 	router := gin.Default()
-	// httpCon := controller.NewHTTPController(svc, os.Getenv("SECRET_KEY"))
+	httpCon := controller.NewHTTPController(svc, os.Getenv("SECRET_KEY"))
 
 	//route
 	router.GET("/api/soon/status", func(ctx *gin.Context) { ctx.String(http.StatusOK, "ready\n") })
 	//User
-	// router.POST("/api/soon/users", httpCon.PostUser)
-	// router.POST("/api/soon/users/login", httpCon.LoginUser)
+	router.POST("/api/soon/user", httpCon.PostUser)
+	router.POST("/api/soon/login", httpCon.LoginUser)
 
 	//check auth
 	router.Use(AuthMiddleware(svc))
+
+	//User
+	router.GET("/api/soon/user", httpCon.GetUser)
+	router.DELETE("/api/soon/user", httpCon.DeleteUser)
 
 	router.Run(":8080")
 }
@@ -34,15 +38,14 @@ func AuthMiddleware(svc *service.SoonService) gin.HandlerFunc {
 	return func(c *gin.Context) {
 		rsp := controller.GetResponse()
 		token := c.GetHeader("Authorization")
-		userPhone, err := auth.ValidateToken(token, os.Getenv("SECRET_KEY"))
+		user_id, err := auth.ValidateToken(token, os.Getenv("SECRET_KEY"))
 		if err != nil {
-			rsp.Meta.Code = http.StatusUnauthorized
-			rsp.Meta.Message = "unauthorized"
+			rsp.Message = "unauthorized"
 			c.JSON(http.StatusUnauthorized, rsp)
 			c.Abort()
 			return
 		}
-		c.Set("phone", userPhone)
+		c.Set("user_id", user_id)
 		c.Next()
 	}
 }

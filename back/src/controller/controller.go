@@ -3,7 +3,6 @@ package controller
 import (
 	"fmt"
 	"main/src/service"
-	"net/http"
 	"strings"
 )
 
@@ -20,11 +19,9 @@ func NewHTTPController(svc *service.SoonService, key string) *HTTPController {
 }
 
 type response struct {
-	Meta struct {
-		Code    int    `json:"code"`
-		Message string `json:"message"`
-	} `json:"meta"`
-	Data interface{} `json:"data"`
+	Success bool        `json:"success"`
+	Message string      `json:"message"`
+	Data    interface{} `json:"data"`
 }
 
 func GetResponse() *response {
@@ -32,13 +29,11 @@ func GetResponse() *response {
 }
 
 func responseSetSuccess(r *response) {
-	r.Meta.Code = http.StatusOK
-	r.Meta.Message = "ok"
+	r.Success = true
 }
 
 func responseSetBindError(r *response) {
-	r.Meta.Code = http.StatusBadRequest
-	r.Meta.Message = "request data struct is wrong"
+	r.Message = "request data struct is wrong"
 }
 
 func responseSetMissingData(r *response, data ...string) {
@@ -47,8 +42,7 @@ func responseSetMissingData(r *response, data ...string) {
 		msData = append(msData, str)
 	}
 
-	r.Meta.Code = http.StatusBadRequest
-	r.Meta.Message = fmt.Sprintf("data is missing. check data <%s>", strings.Join(msData, ","))
+	r.Message = fmt.Sprintf("data is missing. check data <%s>", strings.Join(msData, ","))
 }
 
 func responseSetWrongData(r *response, data ...string) {
@@ -57,8 +51,7 @@ func responseSetWrongData(r *response, data ...string) {
 		wData = append(wData, str)
 	}
 
-	r.Meta.Code = http.StatusBadRequest
-	r.Meta.Message = fmt.Sprintf("data is wrong. check data <%s>", strings.Join(wData, ","))
+	r.Message = fmt.Sprintf("data is wrong. check data <%s>", strings.Join(wData, ","))
 }
 
 func responseSetUnauthorized(r *response, data ...string) {
@@ -67,6 +60,5 @@ func responseSetUnauthorized(r *response, data ...string) {
 		wData = append(wData, str)
 	}
 
-	r.Meta.Code = http.StatusUnauthorized
-	r.Meta.Message = "unauthorized"
+	r.Message = "unauthorized"
 }

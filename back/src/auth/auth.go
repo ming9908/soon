@@ -8,7 +8,7 @@ import (
 )
 
 type AuthClaims struct {
-	Phone string `json:"phone"`
+	UserID string `json:"user_id"`
 	jwt.StandardClaims
 }
 
@@ -16,9 +16,9 @@ type RspToken struct {
 	AccessToken string `json:"access_token"`
 }
 
-func MakeJWTToken(phone, secretKey string) (string, error) {
+func MakeJWTToken(userID, secretKey string) (string, error) {
 	at := AuthClaims{
-		Phone: phone,
+		UserID: userID,
 		StandardClaims: jwt.StandardClaims{
 			ExpiresAt: jwt.At(time.Now().Add(time.Minute * 60)),
 		},
@@ -40,8 +40,8 @@ func ValidateToken(token, secretKey string) (string, error) {
 		return []byte(secretKey), nil
 	})
 	if err != nil {
-		return claim.Phone, err
+		return claim.UserID, err
 	}
 
-	return claim.Phone, err
+	return claim.UserID, err
 }
