@@ -5,7 +5,7 @@ import json
 from controller import user as con
 
 
-app = FastAPI()
+app = FastAPI(swagger_ui_parameters={"syntaxHighlight": False})
 
 
 @app.get("/")
@@ -19,8 +19,8 @@ async def postUser(item: con.PostUser):
 
 
 @app.post("/login")
-async def login():
-    return con.login()
+async def login(item: con.LoginUser):
+    return con.login(item)
 
 
 @app.get("/user")
@@ -28,6 +28,6 @@ async def getUser():
     return {"message": "Hello World"}
 
 
-@app.delete("/user/:user_id")
-async def deleteUser():
+@app.delete("/user/:user_code")
+async def deleteUser(user_code: str):
     return {"message": "Hello World"}

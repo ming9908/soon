@@ -1,14 +1,6 @@
 from pydantic import BaseModel  # import BaseModel
 from auth import auth
-
-
-class response:
-    success: bool
-    message: str
-    data: any
-
-    def __init__(self):
-        self.success = False
+from common import response
 
 
 class PostUser(BaseModel):
@@ -25,15 +17,19 @@ def postuser(item: PostUser):
     return res
 
 
-class LoginUser:
+class LoginUser(BaseModel):
     user_id: str
     pw: str
 
 
 def login(user: LoginUser):
+    res = response()
     # user select
 
     # make token
     token = auth.MakeJWTToken("ser.user_id", "user.nick")
+    if token == "":
+        return res
+    res.set_success()
 
-    return token
+    return res
