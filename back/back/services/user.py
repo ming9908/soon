@@ -1,6 +1,5 @@
 from pydantic import BaseModel  # import BaseModel
-from auth import auth
-from common import response
+from core import common, auth
 
 
 class PostUser(BaseModel):
@@ -10,7 +9,7 @@ class PostUser(BaseModel):
 
 
 def postuser(item: PostUser):
-    res = response()
+    res = common.response()
     # inser user
 
     res.success = True
@@ -23,7 +22,7 @@ class LoginUser(BaseModel):
 
 
 def login(user: LoginUser):
-    res = response()
+    res = common.response()
     # user select
 
     # make token
