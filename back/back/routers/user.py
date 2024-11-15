@@ -6,7 +6,8 @@ router = APIRouter()
 
 @router.post("/user")
 async def postUser(item: con.PostUser):
-    return con.postuser(item)
+    await con.postuser(item)
+    return
 
 
 @router.post("/login")

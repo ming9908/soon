@@ -1,9 +1,12 @@
 from fastapi import FastAPI
 import json
+import db
 
 from routers import user, community
 
 app = FastAPI(swagger_ui_parameters={"syntaxHighlight": False})
+
+db.mongo_connect()
 
 
 @app.get("/")

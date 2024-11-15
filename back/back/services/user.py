@@ -1,5 +1,6 @@
 from pydantic import BaseModel  # import BaseModel
 from core import common, auth
+from models import user
 
 
 class PostUser(BaseModel):
@@ -8,9 +9,12 @@ class PostUser(BaseModel):
     profile: str
 
 
-def postuser(item: PostUser):
+async def postuser(item: PostUser):
     res = common.response()
     # inser user
+
+    user1 = user.User(name=item.name, nick=item.nick, profile=item.profile)
+    await user.create_user(user1)
 
     res.success = True
     return res
