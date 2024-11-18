@@ -1,5 +1,5 @@
-from pydantic import BaseModel  # import BaseModel
 from sqids import Sqids
+import bcrypt
 
 
 class response:
@@ -28,3 +28,16 @@ def make_user_code():
 def decode_user_code(id):
     sqids = Sqids()
     numbers = sqids.decode(id)
+
+
+# password hash
+def get_password_hash(password: str) -> str:
+    return bcrypt.hashpw(password.encode("utf-8"), bcrypt.gensalt()).decode("utf-8")
+
+
+# 비밀번호 확인 함수
+def verify_password(plain_password: str, hashed_password: str) -> bool:
+    # 입력한 비밀번호와 해시된 비밀번호를 비교
+    return bcrypt.checkpw(
+        plain_password.encode("utf-8"), hashed_password.encode("utf-8")
+    )

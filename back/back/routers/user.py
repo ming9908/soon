@@ -6,13 +6,14 @@ router = APIRouter()
 
 @router.post("/user")
 async def postUser(item: con.PostUser):
-    await con.postuser(item)
-    return
+    res = await con.postuser(item)
+    return res
 
 
 @router.post("/login")
 async def login(item: con.LoginUser):
-    return con.login(item)
+    res = await con.login(item)
+    return res
 
 
 @router.get("/user")

@@ -14,5 +14,6 @@ async def root():
     return {"message": "Hello World"}
 
 
+app.api_route("soon/v1/")
 app.include_router(user.router)
 app.include_router(community.router)
