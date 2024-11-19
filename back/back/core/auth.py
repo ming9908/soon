@@ -18,11 +18,13 @@ oauth2_scheme = OAuth2PasswordBearer(tokenUrl="token")
 
 @dataclass
 class Token:
+    m_id: str
     user_id: str
     nick: str
     exp: datetime.datetime
 
-    def __init__(self, user_id: str, nick: str):
+    def __init__(self, m_id: str, user_id: str, nick: str):
+        self.m_id = m_id
         self.user_id = user_id
         self.nick = nick
         self.exp = datetime.datetime.utcnow() + datetime.timedelta(

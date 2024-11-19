@@ -11,9 +11,7 @@ class PostUser(BaseModel):
     profile: str
 
 
-async def postuser(item: PostUser):
-    res = common.response()
-
+async def post_user(item: PostUser):
     # set user data
     user = user_db.User(user_id=item.user_id, nick=item.nick, profile=item.profile)
     user.set_password(item.password)
@@ -22,8 +20,27 @@ async def postuser(item: PostUser):
     # insert user
     await user_db.create_user(user)
 
-    res.success = True
-    return res
+    return common.Response("create user success", None)
+
+
+async def check_user_id(user_id: str):
+    count = await user_db.count_user_id(user_id)
+    if count > 0:
+        return common.Response("", False)
+    else:
+        return common.Response("", True)
+
+
+class PatchUser(BaseModel):
+    nick: str
+    profile: str
+
+
+async def patch_user(item: PatchUser, m_id: str):
+    result = await user_db.patch_user(m_id, item)
+    if result.modified_count > 0:
+        return common.Response("success", None)
+    return common.Response("update 0", None)
 
 
 class LoginUser(BaseModel):
@@ -32,13 +49,13 @@ class LoginUser(BaseModel):
 
 
 async def login(item: LoginUser):
-    res = common.response()
     # user select
     user = await user_db.find_user(item.user_id)
     if user != None:
         if common.verify_password(item.password, user.password):
-            print("???")
-            access_token = auth.create_access_token(auth.Token(user.user_id, user.nick))
+            access_token = auth.create_access_token(
+                auth.Token(user.m_id, user.user_id, user.nick)
+            )
             print(access_token)
             return {"access_token": access_token, "token_type": "bearer"}
     raise HTTPException(

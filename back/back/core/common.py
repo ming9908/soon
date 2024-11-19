@@ -2,20 +2,12 @@ from sqids import Sqids
 import bcrypt
 
 
-class response:
-    success: bool
+class Response:
     message: str
     data: any
 
-    def __init__(self):
-        self.success = False
-
-    @classmethod
-    def set_success(self):
-        self.success = True
-        self.message = ""
-
-    def set_data(self, data: any):
+    def __init__(self, message, data) -> None:
+        self.message = message
         self.data = data
 
 
