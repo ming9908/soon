@@ -27,7 +27,7 @@ def make_user_code():
 
 def decode_user_code(id):
     sqids = Sqids()
-    numbers = sqids.decode(id)
+    return sqids.decode(id)
 
 
 # password hash

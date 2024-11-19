@@ -1,8 +1,11 @@
-from fastapi import APIRouter
-from services import user as con
-from . import user, community
+from fastapi import APIRouter, Depends
+from . import user, community, guest
+from core import auth
 
+ROUTER_PREFIX = "/soon/v1"
 
-router = APIRouter(prefix="/soon/v1")
-router.include_router(user.router)
-router.include_router(community.router)
+router = APIRouter(prefix=ROUTER_PREFIX)
+
+router.include_router(guest.router)
+router.include_router(user.router, dependencies=[Depends(auth.verify_token)])
+router.include_router(community.router, dependencies=[Depends(auth.verify_token)])

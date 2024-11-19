@@ -1,7 +1,6 @@
-from fastapi import FastAPI, APIRouter
-import json
+from fastapi import FastAPI
+from core import auth
 import db
-
 import routers
 
 app = FastAPI(swagger_ui_parameters={"syntaxHighlight": False})

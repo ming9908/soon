@@ -1,7 +1,12 @@
 import jwt
-from fastapi import HTTPException, status
+from fastapi import HTTPException, status, Depends
+from typing import Optional
 import datetime
-from fastapi.security import OAuth2PasswordBearer
+from fastapi.security import (
+    OAuth2PasswordBearer,
+    HTTPAuthorizationCredentials,
+    HTTPBearer,
+)
 from dataclasses import dataclass, asdict
 
 SECRET_KEY = "secret_key"
@@ -32,9 +37,19 @@ def create_access_token(data: Token):
 
 
 # JWT 토큰 검증 함수
-def verify_token(token: str):
+def verify_token(
+    credentials: Optional[HTTPAuthorizationCredentials] = Depends(HTTPBearer()),
+):
+    if credentials is None:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Authorization token is missing",
+            headers={"WWW-Authenticate": "Bearer"},
+        )
     try:
-        payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
+        payload = jwt.decode(
+            credentials.credentials, SECRET_KEY, algorithms=[ALGORITHM]
+        )
         return payload
     except jwt.PyJWTError:
         raise HTTPException(
@@ -42,17 +57,3 @@ def verify_token(token: str):
             detail="Could not validate credentials",
             headers={"WWW-Authenticate": "Bearer"},
         )
-
-
-# 토큰을 가져오는 함수
-"""def get_current_user(token: str = Depends(oauth2_scheme)):
-    payload = verify_token(token)
-    username: str = payload.get("sub")
-    if username is None:
-        raise HTTPException(
-            status_code=status.HTTP_401_UNAUTHORIZED,
-            detail="Token is invalid",
-            headers={"WWW-Authenticate": "Bearer"},
-        )
-    return username
-"""
