@@ -1,19 +1,13 @@
-from fastapi import FastAPI
+from fastapi import FastAPI, APIRouter
 import json
 import db
 
-from routers import user, community
+import routers
 
 app = FastAPI(swagger_ui_parameters={"syntaxHighlight": False})
 
+# db connect
 db.mongo_connect()
 
-
-@app.get("/")
-async def root():
-    return {"message": "Hello World"}
-
-
-app.api_route("soon/v1/")
-app.include_router(user.router)
-app.include_router(community.router)
+# router
+app.include_router(routers.router)
