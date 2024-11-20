@@ -1,7 +1,8 @@
 from fastapi import HTTPException, status
 from pydantic import BaseModel
-from core import common, auth
-from models import user as user_db
+from core import auth, Response
+from models import user as db
+from datetime import datetime
 
 
 class PostUser(BaseModel):
@@ -13,22 +14,22 @@ class PostUser(BaseModel):
 
 async def post_user(item: PostUser):
     # set user data
-    user = user_db.User(user_id=item.user_id, nick=item.nick, profile=item.profile)
+    user = db.User(**item.model_dump())
     user.set_password(item.password)
     user.set_new_code()
 
     # insert user
-    await user_db.create_user(user)
+    await db.create_user(user)
 
-    return common.Response("create user success", None)
+    return Response("create user success", None)
 
 
 async def check_user_id(user_id: str):
-    count = await user_db.count_user_id(user_id)
+    count = await db.count_user_id(user_id)
     if count > 0:
-        return common.Response("", False)
+        return Response("", False)
     else:
-        return common.Response("", True)
+        return Response("", True)
 
 
 class PatchUser(BaseModel):
@@ -37,10 +38,10 @@ class PatchUser(BaseModel):
 
 
 async def patch_user(item: PatchUser, m_id: str):
-    result = await user_db.patch_user(m_id, item)
+    result = await db.update_user(m_id, item)
     if result.modified_count > 0:
-        return common.Response("success", None)
-    return common.Response("update 0", None)
+        return Response("success", None)
+    return Response("update 0", None)
 
 
 class LoginUser(BaseModel):
@@ -50,7 +51,7 @@ class LoginUser(BaseModel):
 
 async def login(item: LoginUser):
     # user select
-    user = await user_db.find_user(item.user_id)
+    user = await db.find_user_by_user_id(item.user_id)
     if user != None:
         if common.verify_password(item.password, user.password):
             access_token = auth.create_access_token(
@@ -66,7 +67,26 @@ async def login(item: LoginUser):
 
 
 async def delete_user(m_id: str):
-    result = await user_db.delete_user(m_id)
+    result = await db.delete_user(m_id)
     if result.deleted_count < 0:
-        return common.Response("delete 0", None)
-    return common.Response("", None)
+        return Response("delete 0", None)
+    return Response("", None)
+
+
+class ResGetUser(BaseModel):
+    user_id: str
+    nick: str
+    profile: str
+    code: str
+    create_date: datetime
+
+
+async def get_user(m_id: str):
+    user = await db.find_user_by_m_id(m_id)
+    if user == None:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Invalid credentials",
+            headers={"WWW-Authenticate": "Bearer"},
+        )
+    return Response("", ResGetUser(**user.model_dump()))

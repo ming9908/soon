@@ -1,37 +1,7 @@
 import db
-from fastapi import HTTPException
-from pydantic import BaseModel, model_validator
-from core import common
-from datetime import datetime
-from typing import Optional
+from fastapi import HTTPException, status
 from bson import ObjectId
-
-
-class User(BaseModel):
-    m_id: Optional[str] = None
-    user_id: str
-    password: Optional[str] = None
-    nick: str
-    profile: str
-    code: Optional[str] = None
-    create_date: Optional[str] = None
-    db_stat: str = "A"
-
-    class Config:
-        # ObjectId를 str로 변환
-        json_encoders = {ObjectId: str}
-
-    @model_validator(mode="after")
-    def set_create_date(cls, values):
-        if not values.create_date:  # create_date가 없다면
-            values.create_date = datetime.now().strftime("%Y/%m/%d %H:%M:%S")
-        return values
-
-    def set_password(self, password):
-        self.password = common.get_password_hash(password)
-
-    def set_new_code(self):
-        self.code = common.make_user_code()
+from schema import User
 
 
 async def create_user(item: User):
@@ -40,8 +10,24 @@ async def create_user(item: User):
     return
 
 
-async def find_user(user_id: str):
+async def find_user_by_user_id(user_id: str):
     user = await db.mongo.db["user"].find_one({"user_id": user_id})
+    if user is None:
+        print("검색 결과가 없습니다")
+        raise HTTPException(status_code=404, detail="User not found")
+    if user:
+        user["m_id"] = str(user["_id"])
+    return User(**user)
+
+
+async def find_user_by_m_id(m_id: str):
+    try:
+        user = await db.mongo.db["user"].find_one({"_id": ObjectId(m_id)})
+    except Exception as e:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail=f"Invalid ObjectId format: {str(e)}",
+        )
     if user is None:
         print("검색 결과가 없습니다")
         raise HTTPException(status_code=404, detail="User not found")
@@ -55,7 +41,7 @@ async def count_user_id(user_id: str):
     return count
 
 
-async def patch_user(m_id: str, data):
+async def update_user(m_id: str, data):
     update_data = {
         key: value
         for key, value in data.dict(exclude_unset=True).items()
@@ -73,5 +59,11 @@ async def patch_user(m_id: str, data):
 
 
 async def delete_user(m_id: str):
-    result = await db.mongo.db["user"].delete_one({"_id": ObjectId(m_id)})
+    try:
+        result = await db.mongo.db["user"].delete_one({"_id": ObjectId(m_id)})
+    except Exception as e:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail=f"Invalid ObjectId format: {str(e)}",
+        )
     return result

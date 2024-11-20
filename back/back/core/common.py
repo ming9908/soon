@@ -10,6 +10,9 @@ class Response:
         self.message = message
         self.data = data
 
+    def set_data(self, data):
+        self.data = data
+
 
 # personal code
 def make_user_code():

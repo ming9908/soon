@@ -1,4 +1,4 @@
-from services import user as con
+from services import user as svc
 from fastapi import APIRouter
 
 
@@ -7,22 +7,22 @@ router = APIRouter(tags=["Guest"])
 
 # 회원가입
 @router.post("/user")
-async def post_user(item: con.PostUser):
-    res = await con.post_user(item)
+async def post_user(item: svc.PostUser):
+    res = await svc.post_user(item)
     return res
 
 
 # user_id check
 @router.get("/user/check")
-async def postUser(user_id: str):
-    res = await con.check_user_id(user_id)
+async def check_user_id(user_id: str):
+    res = await svc.check_user_id(user_id)
     return res
 
 
 # login
 @router.post("/login")
-async def login(item: con.LoginUser):
-    res = await con.login(item)
+async def login(item: svc.LoginUser):
+    res = await svc.login(item)
     return res
 
 
