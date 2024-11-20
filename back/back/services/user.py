@@ -1,5 +1,5 @@
 from fastapi import HTTPException, status
-from pydantic import BaseModel  # import BaseModel
+from pydantic import BaseModel
 from core import common, auth
 from models import user as user_db
 
@@ -63,3 +63,10 @@ async def login(item: LoginUser):
         detail="Invalid credentials",
         headers={"WWW-Authenticate": "Bearer"},
     )
+
+
+async def delete_user(m_id: str):
+    result = await user_db.delete_user(m_id)
+    if result.deleted_count < 0:
+        return common.Response("delete 0", None)
+    return common.Response("", None)

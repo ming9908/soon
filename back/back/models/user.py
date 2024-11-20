@@ -8,7 +8,7 @@ from bson import ObjectId
 
 
 class User(BaseModel):
-    m_id: Optional[str]
+    m_id: Optional[str] = None
     user_id: str
     password: Optional[str] = None
     nick: str
@@ -35,7 +35,7 @@ class User(BaseModel):
 
 
 async def create_user(item: User):
-    await db.mongo.db["user"].insert_one(item.model_dump())
+    await db.mongo.db["user"].insert_one(item.model_dump(exclude={"m_id"}))
     print(f"{item.nick}으로 가입되었습니다.")
     return
 
@@ -69,4 +69,9 @@ async def patch_user(m_id: str, data):
     result = await db.mongo.db["user"].update_one(
         {"_id": ObjectId(m_id)}, {"$set": update_data}
     )
+    return result
+
+
+async def delete_user(m_id: str):
+    result = await db.mongo.db["user"].delete_one({"_id": ObjectId(m_id)})
     return result

@@ -26,7 +26,12 @@ async def patch_user(item: con.PatchUser, payload: dict = Depends(auth.verify_to
 # 회원 탈퇴
 @router.delete("/user")
 async def delete_user(payload: dict = Depends(auth.verify_token)):
-    return {"message": "Hello World"}
+    m_id = payload.get("m_id")
+    if not m_id:
+        raise HTTPException(status_code=404, detail="User not found")
+
+    res = await con.delete_user(m_id)
+    return res
 
 
 """
