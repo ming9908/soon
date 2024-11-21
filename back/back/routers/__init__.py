@@ -20,23 +20,25 @@ router.include_router(schedule.router, dependencies=[Depends(auth.verify_token)]
 - 피드 삭제
 
 게시글
-- 삭제처리 확인
-- 업데이트 관련 m_id값 들어가는 지 확인
 
 유저
-- 삭제 처리 확인
-- 업데이트 관련 m_id값 들어가는 지 확인
+- 내 정보 보기(현재 nick,profile.. 기본 정보만 제공)
+- 비밀번호 변경
+- 비밀번호 찾기
 
 일정
 - 일정 list 보기 (start_date, end_date받아서 기간동안의 일정을 리턴하도록 (datetime값)
     -> status 상관없이 삭제되지 않은 모든 스케쥴은 리턴함
 
+식물
+- 식물 검색(외부)
+
+
 마이페이지
-- 회원 수정 (nick, profile)
-- 비밀번호 변경
 - 공지사항 list 보기
 
 개인정보 처리방침?
 Q&A?
 알림설정?
+
 """

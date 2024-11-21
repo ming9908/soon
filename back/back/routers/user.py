@@ -37,9 +37,3 @@ async def delete_user(payload: dict = Depends(auth.verify_token)):
 
     res = await svc.delete_user(user_m_id)
     return res
-
-
-"""
-내 정보 보기...?
-
-"""

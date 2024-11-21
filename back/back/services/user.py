@@ -68,7 +68,7 @@ async def login(item: LoginUser):
 
 async def delete_user(user_m_id: str):
     result = await db.delete_user(user_m_id)
-    if result.deleted_count < 0:
+    if result.modified_count < 0:
         return Response("delete 0", None)
     return Response("", None)
 

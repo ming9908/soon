@@ -32,7 +32,7 @@ async def update_post(item: Post, user_m_id):
     update_data = {
         key: value
         for key, value in item.model_dump(
-            exclude="create_date", exclude_unset=True
+            exclude={"m_id", "create_date"}, exclude_unset=True
         ).items()
         if value != ""  # 빈 문자열("")을 제외
     }

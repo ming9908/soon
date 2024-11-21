@@ -38,6 +38,6 @@ async def patch_post(item: PatchPost, user_m_id: str):
 
 async def delete_post(post_id: str, user_m_id: str):
     result = await db.delete_post(post_id, user_m_id)
-    if result.deleted_count > 0:
+    if result.modified_count > 0:
         return Response("success", None)
     return Response("modify 0", None)

@@ -42,19 +42,3 @@ async def patch_post(post_id: str, payload: dict = Depends(auth.verify_token)):
         raise HTTPException(status_code=404, detail="User not found")
     res = await svc.delete_post(post_id, user_m_id)
     return res
-
-
-"""
-- 게시글 작성
-- 게시글 수정
-- 게시글 보기(단일)
-내 게시글 보기 (list)
-내가 좋아요한 게시글 보기 (list)  <- 통합? 분리가 맞는거 같음 ( 테이블 분리 예정 )
-게시글 보기 (list) topic별로 구분 
-
-
-- 댓글달기
-- 댓글수정
-- 댓글삭제
-
-"""

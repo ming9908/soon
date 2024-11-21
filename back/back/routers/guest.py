@@ -24,9 +24,3 @@ async def check_user_id(user_id: str):
 async def login(item: svc.LoginUser):
     res = await svc.login(item)
     return res
-
-
-"""
-- 비밀번호 챶기에 대해...
-
-"""

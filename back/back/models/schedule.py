@@ -38,7 +38,6 @@ async def get_schedules(user_m_id: str):
     if schedules is None:
         print("검색 결과가 없습니다")
         raise HTTPException(status_code=404, detail="User not found")
-    print(schedules)
     sch = [serialize_item(item) for item in schedules]
     return [Schedule(**item) for item in sch]
 
