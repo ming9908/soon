@@ -1,6 +1,6 @@
 from fastapi import HTTPException, status
 from pydantic import BaseModel
-from core import auth, Response
+from core import auth, Response, common
 from models import user as db
 from datetime import datetime
 
@@ -37,8 +37,8 @@ class PatchUser(BaseModel):
     profile: str
 
 
-async def patch_user(item: PatchUser, m_id: str):
-    result = await db.update_user(m_id, item)
+async def patch_user(item: PatchUser, user_m_id: str):
+    result = await db.update_user(user_m_id, item)
     if result.modified_count > 0:
         return Response("success", None)
     return Response("update 0", None)
@@ -66,8 +66,8 @@ async def login(item: LoginUser):
     )
 
 
-async def delete_user(m_id: str):
-    result = await db.delete_user(m_id)
+async def delete_user(user_m_id: str):
+    result = await db.delete_user(user_m_id)
     if result.deleted_count < 0:
         return Response("delete 0", None)
     return Response("", None)
@@ -81,8 +81,8 @@ class ResGetUser(BaseModel):
     create_date: datetime
 
 
-async def get_user(m_id: str):
-    user = await db.find_user_by_m_id(m_id)
+async def get_user(user_m_id: str):
+    user = await db.find_user_by_m_id(user_m_id)
     if user == None:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,

@@ -10,11 +10,11 @@ router = APIRouter(tags=["Plant"])
 # get user data
 @router.post("/plant")
 async def ddd(item: svc.PostPlant, payload: dict = Depends(auth.verify_token)):
-    m_id = payload.get("m_id")
-    if not m_id:
+    user_m_id = payload.get("user_m_id")
+    if not user_m_id:
         raise HTTPException(status_code=404, detail="User not found")
 
-    await svc.post_plant(item, m_id)
+    await svc.post_plant(item, user_m_id)
     return
 
 

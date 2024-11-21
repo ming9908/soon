@@ -19,28 +19,28 @@ async def get_posts(post_id: str):
 
 @router.post("/post")
 async def create_post(item: svc.CreatePost, payload: dict = Depends(auth.verify_token)):
-    m_id = payload.get("m_id")
-    if not m_id:
+    user_m_id = payload.get("user_m_id")
+    if not user_m_id:
         raise HTTPException(status_code=404, detail="User not found")
-    res = await svc.create_post(item, m_id)
+    res = await svc.create_post(item, user_m_id)
     return res
 
 
 @router.patch("/post")
 async def patch_post(item: svc.PatchPost, payload: dict = Depends(auth.verify_token)):
-    m_id = payload.get("m_id")
-    if not m_id:
+    user_m_id = payload.get("user_m_id")
+    if not user_m_id:
         raise HTTPException(status_code=404, detail="User not found")
-    res = await svc.patch_post(item, m_id)
+    res = await svc.patch_post(item, user_m_id)
     return res
 
 
 @router.delete("/post")
 async def patch_post(post_id: str, payload: dict = Depends(auth.verify_token)):
-    m_id = payload.get("m_id")
-    if not m_id:
+    user_m_id = payload.get("user_m_id")
+    if not user_m_id:
         raise HTTPException(status_code=404, detail="User not found")
-    res = await svc.delete_post(post_id, m_id)
+    res = await svc.delete_post(post_id, user_m_id)
     return res
 
 

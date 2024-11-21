@@ -11,7 +11,7 @@ async def create_user(item: User):
 
 
 async def find_user_by_user_id(user_id: str):
-    user = await db.mongo.db["user"].find_one({"user_id": user_id})
+    user = await db.mongo.db["user"].find_one({"user_id": user_id, "db_stat": "A"})
     if user is None:
         print("검색 결과가 없습니다")
         raise HTTPException(status_code=404, detail="User not found")
@@ -22,7 +22,9 @@ async def find_user_by_user_id(user_id: str):
 
 async def find_user_by_m_id(m_id: str):
     try:
-        user = await db.mongo.db["user"].find_one({"_id": ObjectId(m_id)})
+        user = await db.mongo.db["user"].find_one(
+            {"_id": ObjectId(m_id), "db_stat": "A"}
+        )
     except Exception as e:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
@@ -37,7 +39,9 @@ async def find_user_by_m_id(m_id: str):
 
 
 async def count_user_id(user_id: str):
-    count = await db.mongo.db["user"].count_documents({"user_id": user_id})
+    count = await db.mongo.db["user"].count_documents(
+        {"user_id": user_id, "db_stat": "A"}
+    )
     return count
 
 
@@ -60,7 +64,10 @@ async def update_user(m_id: str, data):
 
 async def delete_user(m_id: str):
     try:
-        result = await db.mongo.db["user"].delete_one({"_id": ObjectId(m_id)})
+        # result = await db.mongo.db["user"].delete_one({"_id": ObjectId(m_id)})
+        result = await db.mongo.db["user"].update_one(
+            {"_id": ObjectId(m_id)}, {"$set": {"db_stat": "D"}}
+        )
     except Exception as e:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,

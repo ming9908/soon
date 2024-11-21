@@ -4,10 +4,9 @@ from typing import Optional
 from bson import ObjectId
 
 
-class Post(BaseModel):
+class Feed(BaseModel):
     m_id: Optional[str] = None
 
-    title: str
     content: str
 
     user_m_id: Optional[str] = None  # 작성자

@@ -1,34 +1,32 @@
 import db
 from fastapi import HTTPException, status
 from bson import ObjectId
-from schema import Post
+from schema import Feed
 
 
-async def create_post(item: Post, user_m_id):
-    item.user_m_id = user_m_id
-    await db.mongo.db["post"].insert_one(item.model_dump(exclude={"m_id"}))
+async def create_feed(item: Feed, m_id):
+    item.user_m_id = m_id
+    await db.mongo.db["feed"].insert_one(item.model_dump(exclude={"m_id"}))
     return
 
 
-async def get_post(post_id: str):
+async def get_feed(feed_id: str):
     try:
-        post = await db.mongo.db["post"].find_one(
-            {"_id": ObjectId(post_id), "db_stat": "A"}
-        )
+        feed = await db.mongo.db["feed"].find_one({"_id": ObjectId(feed_id)})
     except Exception as e:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
             detail=f"Invalid ObjectId format: {str(e)}",
         )
-    if post is None:
+    if feed is None:
         print("검색 결과가 없습니다")
         raise HTTPException(status_code=404, detail="User not found")
-    if post:
-        post["m_id"] = str(post["_id"])
-    return Post(**post)
+    if feed:
+        feed["m_id"] = str(feed["_id"])
+    return Feed(**feed)
 
 
-async def update_post(item: Post, user_m_id):
+async def update_feed(item: Feed, m_id):
     update_data = {
         key: value
         for key, value in item.model_dump(
@@ -41,8 +39,8 @@ async def update_post(item: Post, user_m_id):
         raise HTTPException(status_code=400, detail="No valid data to update")
 
     try:
-        result = await db.mongo.db["post"].update_one(
-            {"_id": ObjectId(item.m_id), "user_m_id": user_m_id}, {"$set": update_data}
+        result = await db.mongo.db["feed"].update_one(
+            {"_id": ObjectId(item.m_id), "user_m_id": m_id}, {"$set": update_data}
         )
     except Exception as e:
         raise HTTPException(
@@ -53,12 +51,10 @@ async def update_post(item: Post, user_m_id):
     return result
 
 
-async def delete_post(post_id: str, user_m_id: str):
+async def delete_feed(feed_id: str, m_id: str):
     try:
-        # result = await db.mongo.db["post"].delete_one({"_id": ObjectId(post_id), "user_m_id": user_m_id})
-        result = await db.mongo.db["post"].update_one(
-            {"_id": ObjectId(post_id), "user_m_id": user_m_id},
-            {"$set": {"db_stat": "D"}},
+        result = await db.mongo.db["feed"].delete_one(
+            {"_id": ObjectId(feed_id), "user_m_id": m_id}
         )
     except Exception as e:
         raise HTTPException(
