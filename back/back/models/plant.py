@@ -70,6 +70,7 @@ async def get_plants(user_m_id: str):
     )
     if plants is None:
         print("검색 결과가 없습니다")
-        core.raise_not_found("plant not found")
+        # core.raise_not_found("plant not found")
+        return []
     plt = [serialize_item(item) for item in plants]
     return [Plant(**item) for item in plt]
