@@ -1,8 +1,8 @@
 from schema import Plant
 import db
-from fastapi import HTTPException, status
 from bson import ObjectId
 from . import serialize_item
+import core
 
 
 async def create_plant(item: Plant, user_m_id: str):
@@ -21,17 +21,16 @@ async def update_plant(item: Plant, user_m_id: str):
     }
 
     if not update_data:
-        raise HTTPException(status_code=400, detail="No valid data to update")
+        # raise HTTPException(status_code=400, detail="No valid data to update")
+        # 로그
+        print("no valid data to update")
 
     try:
         result = await db.mongo.db["plant"].update_one(
             {"_id": ObjectId(item.m_id), "user_m_id": user_m_id}, {"$set": update_data}
         )
     except Exception as e:
-        raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST,
-            detail=f"Invalid ObjectId format: {str(e)}",
-        )
+        core.raise_bad_request(f"Invalid ObjectId format: {str(e)}")
 
     return result
 
@@ -43,10 +42,7 @@ async def update_plant_status(plant_id: str, status: str, user_m_id: str):
             {"$set": {"status": status}},
         )
     except Exception as e:
-        raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST,
-            detail=f"Invalid ObjectId format: {str(e)}",
-        )
+        core.raise_bad_request(f"Invalid ObjectId format: {str(e)}")
 
     return result
 
@@ -57,13 +53,10 @@ async def get_plant(plant_id: str):
             {"_id": ObjectId(plant_id), "db_stat": "A"}
         )
     except Exception as e:
-        raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST,
-            detail=f"Invalid ObjectId format: {str(e)}",
-        )
+        core.raise_bad_request(f"Invalid ObjectId format: {str(e)}")
     if plant is None:
         print("검색 결과가 없습니다")
-        raise HTTPException(status_code=404, detail="User not found")
+        core.raise_not_found("plant not found")
     if plant:
         plant["m_id"] = str(plant["_id"])
     return Plant(**plant)
@@ -77,6 +70,6 @@ async def get_plants(user_m_id: str):
     )
     if plants is None:
         print("검색 결과가 없습니다")
-        raise HTTPException(status_code=404, detail="User not found")
+        core.raise_not_found("plant not found")
     plt = [serialize_item(item) for item in plants]
     return [Plant(**item) for item in plt]

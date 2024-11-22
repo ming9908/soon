@@ -19,8 +19,6 @@ router.include_router(schedule.router, dependencies=[Depends(auth.verify_token)]
 - 피드 수정
 - 피드 삭제
 
-게시글
-
 유저
 - 내 정보 보기(현재 nick,profile.. 기본 정보만 제공)
 - 비밀번호 변경

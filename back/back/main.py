@@ -1,5 +1,4 @@
 from fastapi import FastAPI
-from core import auth
 import db
 import routers
 

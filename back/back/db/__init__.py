@@ -1,5 +1,4 @@
 from motor.motor_asyncio import AsyncIOMotorClient
-from odmantic import AIOEngine
 
 # 소중한 Secrets.json 가져오기
 # from app.config import MONGO_DB_NAME, MONGO_DB_URL

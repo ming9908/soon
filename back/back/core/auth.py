@@ -8,6 +8,7 @@ from fastapi.security import (
     HTTPBearer,
 )
 from dataclasses import dataclass, asdict
+from . import raise_unauthorized
 
 SECRET_KEY = "secret_key"
 ALGORITHM = "HS256"
@@ -43,19 +44,11 @@ def verify_token(
     credentials: Optional[HTTPAuthorizationCredentials] = Depends(HTTPBearer()),
 ):
     if credentials is None:
-        raise HTTPException(
-            status_code=status.HTTP_401_UNAUTHORIZED,
-            detail="Authorization token is missing",
-            headers={"WWW-Authenticate": "Bearer"},
-        )
+        raise_unauthorized("Authorization token is missing")
     try:
         payload = jwt.decode(
             credentials.credentials, SECRET_KEY, algorithms=[ALGORITHM]
         )
         return payload
     except jwt.PyJWTError:
-        raise HTTPException(
-            status_code=status.HTTP_401_UNAUTHORIZED,
-            detail="Could not validate credentials",
-            headers={"WWW-Authenticate": "Bearer"},
-        )
+        raise_unauthorized("Could not validate credentials")

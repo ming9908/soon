@@ -4,7 +4,7 @@ from core import auth
 
 router = APIRouter(tags=["Feed"])
 
-
+"""
 @router.get("/feeds")
 async def get_feeds(item: svc.CreateFeed):
     # res = await svc.get_feed()
@@ -42,3 +42,4 @@ async def patch_feed(feed_id: str, payload: dict = Depends(auth.verify_token)):
         raise HTTPException(status_code=404, detail="User not found")
     res = await svc.delete_feed(feed_id, user_m_id)
     return res
+"""

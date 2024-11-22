@@ -1,8 +1,8 @@
 import db
-from fastapi import HTTPException, status
 from bson import ObjectId
 from schema import Feed
 
+"""
 
 async def create_feed(item: Feed, m_id):
     item.user_m_id = m_id
@@ -62,3 +62,4 @@ async def delete_feed(feed_id: str, m_id: str):
             detail=f"Invalid ObjectId format: {str(e)}",
         )
     return result
+"""

@@ -1,8 +1,8 @@
 import db
-from fastapi import HTTPException, status
 from bson import ObjectId
 from schema import Schedule
 from . import serialize_item
+import core
 
 
 async def create_schedule(item: Schedule, m_id):
@@ -17,13 +17,10 @@ async def get_schedule(schedule_id: str):
             {"_id": ObjectId(schedule_id), "db_stat": "A"}
         )
     except Exception as e:
-        raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST,
-            detail=f"Invalid ObjectId format: {str(e)}",
-        )
+        core.raise_bad_request(f"Invalid ObjectId format: {str(e)}")
     if schedule is None:
         print("검색 결과가 없습니다")
-        raise HTTPException(status_code=404, detail="User not found")
+        core.raise_not_found("schedule not found")
     if schedule:
         schedule["m_id"] = str(schedule["_id"])
     return Schedule(**schedule)
@@ -36,8 +33,7 @@ async def get_schedules(user_m_id: str):
         .to_list()
     )
     if schedules is None:
-        print("검색 결과가 없습니다")
-        raise HTTPException(status_code=404, detail="User not found")
+        return []
     sch = [serialize_item(item) for item in schedules]
     return [Schedule(**item) for item in sch]
 
@@ -50,17 +46,15 @@ async def update_schedule(item: Schedule, user_m_id: str):
     }
 
     if not update_data:
-        raise HTTPException(status_code=400, detail="No valid data to update")
+        # 로그처리
+        print("no valid data to update")
 
     try:
         result = await db.mongo.db["schedule"].update_one(
             {"_id": ObjectId(item.m_id), "user_m_id": user_m_id}, {"$set": update_data}
         )
     except Exception as e:
-        raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST,
-            detail=f"Invalid ObjectId format: {str(e)}",
-        )
+        core.raise_bad_request(f"Invalid ObjectId format: {str(e)}")
 
     return result
 
@@ -72,10 +66,7 @@ async def update_schedule_status(schedule_id: str, status: str, user_m_id: str):
             {"$set": {"status": status}},
         )
     except Exception as e:
-        raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST,
-            detail=f"Invalid ObjectId format: {str(e)}",
-        )
+        core.raise_bad_request(f"Invalid ObjectId format: {str(e)}")
 
     return result
 
@@ -87,9 +78,6 @@ async def delete_schedule(schedule_id: str, user_m_id: str):
             {"$set": {"db_stat": "D"}},
         )
     except Exception as e:
-        raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST,
-            detail=f"Invalid ObjectId format: {str(e)}",
-        )
+        core.raise_bad_request(f"Invalid ObjectId format: {str(e)}")
 
     return result

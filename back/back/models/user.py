@@ -1,7 +1,7 @@
 import db
-from fastapi import HTTPException, status
 from bson import ObjectId
 from schema import User
+import core
 
 
 async def create_user(item: User):
@@ -14,7 +14,7 @@ async def find_user_by_user_id(user_id: str):
     user = await db.mongo.db["user"].find_one({"user_id": user_id, "db_stat": "A"})
     if user is None:
         print("검색 결과가 없습니다")
-        raise HTTPException(status_code=404, detail="User not found")
+        core.raise_not_found("User not found")
     if user:
         user["m_id"] = str(user["_id"])
     return User(**user)
@@ -26,13 +26,10 @@ async def find_user_by_m_id(m_id: str):
             {"_id": ObjectId(m_id), "db_stat": "A"}
         )
     except Exception as e:
-        raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST,
-            detail=f"Invalid ObjectId format: {str(e)}",
-        )
+        core.raise_bad_request(f"Invalid ObjectId format: {str(e)}")
     if user is None:
         print("검색 결과가 없습니다")
-        raise HTTPException(status_code=404, detail="User not found")
+        core.raise_not_found("User not found")
     if user:
         user["m_id"] = str(user["_id"])
     return User(**user)
@@ -54,7 +51,9 @@ async def update_user(m_id: str, data):
 
     # 만약 update_data가 비어있다면, 업데이트할 데이터가 없다는 의미
     if not update_data:
-        raise HTTPException(status_code=400, detail="No valid data to update")
+        # core.raise_bad_request("No valid data to update")
+        # 로그 처리
+        print("no valid data to update")
 
     result = await db.mongo.db["user"].update_one(
         {"_id": ObjectId(m_id)}, {"$set": update_data}
@@ -69,8 +68,5 @@ async def delete_user(m_id: str):
             {"_id": ObjectId(m_id)}, {"$set": {"db_stat": "D"}}
         )
     except Exception as e:
-        raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST,
-            detail=f"Invalid ObjectId format: {str(e)}",
-        )
+        core.raise_bad_request(f"Invalid ObjectId format: {str(e)}")
     return result

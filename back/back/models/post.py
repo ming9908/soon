@@ -1,7 +1,7 @@
 import db
-from fastapi import HTTPException, status
 from bson import ObjectId
 from schema import Post
+import core
 
 
 async def create_post(item: Post, user_m_id):
@@ -16,13 +16,10 @@ async def get_post(post_id: str):
             {"_id": ObjectId(post_id), "db_stat": "A"}
         )
     except Exception as e:
-        raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST,
-            detail=f"Invalid ObjectId format: {str(e)}",
-        )
+        core.raise_bad_request(f"Invalid ObjectId format: {str(e)}")
     if post is None:
         print("검색 결과가 없습니다")
-        raise HTTPException(status_code=404, detail="User not found")
+        core.raise_not_found("post not found")
     if post:
         post["m_id"] = str(post["_id"])
     return Post(**post)
@@ -38,17 +35,16 @@ async def update_post(item: Post, user_m_id):
     }
 
     if not update_data:
-        raise HTTPException(status_code=400, detail="No valid data to update")
+        # raise HTTPException(status_code=400, detail="No valid data to update")
+        # 로그
+        print("no valid data to update")
 
     try:
         result = await db.mongo.db["post"].update_one(
             {"_id": ObjectId(item.m_id), "user_m_id": user_m_id}, {"$set": update_data}
         )
     except Exception as e:
-        raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST,
-            detail=f"Invalid ObjectId format: {str(e)}",
-        )
+        core.raise_bad_request(f"Invalid ObjectId format: {str(e)}")
 
     return result
 
@@ -61,8 +57,5 @@ async def delete_post(post_id: str, user_m_id: str):
             {"$set": {"db_stat": "D"}},
         )
     except Exception as e:
-        raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST,
-            detail=f"Invalid ObjectId format: {str(e)}",
-        )
+        core.raise_bad_request(f"Invalid ObjectId format: {str(e)}")
     return result

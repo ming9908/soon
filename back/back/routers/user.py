@@ -1,5 +1,5 @@
 from services import user as svc
-from fastapi import APIRouter, Depends, HTTPException
+from fastapi import APIRouter, Depends
 from core import auth
 
 
@@ -10,9 +10,6 @@ router = APIRouter(tags=["User"])
 @router.get("/user")
 async def get_user(payload: dict = Depends(auth.verify_token)):
     user_m_id = payload.get("user_m_id")
-    if not user_m_id:
-        raise HTTPException(status_code=404, detail="User not found")
-
     res = await svc.get_user(user_m_id)
     return res
 
@@ -21,9 +18,6 @@ async def get_user(payload: dict = Depends(auth.verify_token)):
 @router.patch("/user")
 async def patch_user(item: svc.PatchUser, payload: dict = Depends(auth.verify_token)):
     user_m_id = payload.get("user_m_id")
-    if not user_m_id:
-        raise HTTPException(status_code=404, detail="User not found")
-
     res = await svc.patch_user(item, user_m_id)
     return res
 
@@ -32,8 +26,5 @@ async def patch_user(item: svc.PatchUser, payload: dict = Depends(auth.verify_to
 @router.delete("/user")
 async def delete_user(payload: dict = Depends(auth.verify_token)):
     user_m_id = payload.get("user_m_id")
-    if not user_m_id:
-        raise HTTPException(status_code=404, detail="User not found")
-
     res = await svc.delete_user(user_m_id)
     return res
