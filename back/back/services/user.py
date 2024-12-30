@@ -6,7 +6,7 @@ from datetime import datetime
 
 
 class PostUser(BaseModel):
-    user_id: str
+    email: str
     password: str
     nick: str
     profile: str
@@ -24,8 +24,8 @@ async def post_user(item: PostUser):
     return Response("create user success", None)
 
 
-async def check_user_id(user_id: str):
-    count = await db.count_user_id(user_id)
+async def check_email_valid(email: str):
+    count = await db.count_email(email)
     if count > 0:
         return Response("", False)
     else:
@@ -45,17 +45,17 @@ async def patch_user(item: PatchUser, user_m_id: str):
 
 
 class LoginUser(BaseModel):
-    user_id: str
+    email: str
     password: str
 
 
 async def login(item: LoginUser):
     # user select
-    user = await db.find_user_by_user_id(item.user_id)
+    user = await db.find_user_by_email(item.email)
     if user != None:
         if common.verify_password(item.password, user.password):
             access_token = auth.create_access_token(
-                auth.Token(user.m_id, user.user_id, user.nick)
+                auth.Token(user.m_id, user.email, user.nick)
             )
             print(access_token)
             return {"access_token": access_token, "token_type": "bearer"}
@@ -74,7 +74,7 @@ async def delete_user(user_m_id: str):
 
 
 class ResGetUser(BaseModel):
-    user_id: str
+    email: str
     nick: str
     profile: str
     code: str

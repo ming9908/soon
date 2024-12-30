@@ -7,7 +7,7 @@ from bson import ObjectId
 
 class User(BaseModel):
     m_id: Optional[str] = None
-    user_id: str
+    email: str
     password: Optional[str] = None
     nick: str
     profile: str

@@ -10,8 +10,8 @@ async def create_user(item: User):
     return
 
 
-async def find_user_by_user_id(user_id: str):
-    user = await db.mongo.db["user"].find_one({"user_id": user_id, "db_stat": "A"})
+async def find_user_by_email(email: str):
+    user = await db.mongo.db["user"].find_one({"email": email, "db_stat": "A"})
     if user is None:
         print("검색 결과가 없습니다")
         core.raise_not_found("User not found")
@@ -35,10 +35,8 @@ async def find_user_by_m_id(m_id: str):
     return User(**user)
 
 
-async def count_user_id(user_id: str):
-    count = await db.mongo.db["user"].count_documents(
-        {"user_id": user_id, "db_stat": "A"}
-    )
+async def count_email(email: str):
+    count = await db.mongo.db["user"].count_documents({"email": email, "db_stat": "A"})
     return count
 
 

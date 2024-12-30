@@ -1,4 +1,3 @@
-from fastapi import HTTPException, status
 from pydantic import BaseModel
 from core import Response
 from models import post as db
@@ -13,6 +12,16 @@ async def create_post(item: CreatePost, user_m_id: str):
     post = db.Post(**item.model_dump())
     await db.create_post(post, user_m_id)
     return Response("make post success", None)
+
+
+class GetPosts(BaseModel):
+    cursor: int
+    limit: int
+    type: str
+
+
+async def get_posts(user_m_id: str):
+    return Response("", None)
 
 
 async def get_post(post_id: str):

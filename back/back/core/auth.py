@@ -20,13 +20,13 @@ oauth2_scheme = OAuth2PasswordBearer(tokenUrl="token")
 @dataclass
 class Token:
     user_m_id: str
-    user_id: str
+    email: str
     nick: str
     exp: datetime.datetime
 
-    def __init__(self, user_m_id: str, user_id: str, nick: str):
+    def __init__(self, user_m_id: str, email: str, nick: str):
         self.user_m_id = user_m_id
-        self.user_id = user_id
+        self.email = email
         self.nick = nick
         self.exp = datetime.datetime.utcnow() + datetime.timedelta(
             seconds=60 * 60 * 24  # 1일 만료

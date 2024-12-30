@@ -2,13 +2,19 @@ from sqids import Sqids
 import bcrypt
 
 
+DEFAULT_API_POST_LIST_COUNT = 10
+DEFAULT_API_FEED_LIST_COUNT = 18
+
+
 class Response:
+    code: int
     message: str
     data: any
 
     def __init__(self, message, data) -> None:
         self.message = message
         self.data = data
+        self.code = 200
 
     def set_data(self, data):
         self.data = data

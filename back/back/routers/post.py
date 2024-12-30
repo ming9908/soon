@@ -7,8 +7,8 @@ router = APIRouter(tags=["Post"])
 
 @router.get("/posts")
 async def get_posts(item: svc.CreatePost):
-    # res = await svc.get_post()
-    return  # svc.postuser(item)
+    res = await svc.get_posts()
+    return res
 
 
 @router.get("/post")
